@@ -1,4 +1,4 @@
-use crate::Request;
+use crate::{mytoken::Profile, Request};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -42,7 +42,7 @@ impl Request for AccessTokenRequest {}
 pub struct MytokenRequest {
     request: RequestType,
     account: String,
-    mytoken_profile: Option<String>,
+    mytoken_profile: Option<Profile>,
     application_hint: Option<String>,
 }
 
@@ -51,7 +51,7 @@ impl MytokenRequest {
         Self {
             request: RequestType::MYTOKEN,
             account: account.to_string(),
-            mytoken_profile: None,
+            mytoken_profile: Some(Profile::basic()),
             application_hint: None,
         }
     }
