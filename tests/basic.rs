@@ -1,4 +1,5 @@
 use oidc_agent_rs::*;
+
 #[test]
 fn test_basic() {
     let client = Client::new().unwrap();

@@ -1,4 +1,5 @@
 use crate::Response;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fmt::Display;
@@ -35,7 +36,9 @@ impl OIDCAgentResponse {
 pub struct AccessTokenResponse {
     pub access_token: String,
     issuer: Url,
-    expires_at: usize,
+
+    #[serde(with = "chrono::serde::ts_seconds")]
+    expires_at: DateTime<Utc>,
 }
 
 impl Response for AccessTokenResponse {}
@@ -45,7 +48,9 @@ pub struct MytokenResponse {
     pub mytoken: String,
     mytoken_issuer: Url,
     oidc_issuer: Url,
-    expires_at: usize,
+
+    #[serde(with = "chrono::serde::ts_seconds")]
+    expires_at: DateTime<Utc>,
 }
 
 impl Response for MytokenResponse {}
@@ -73,8 +78,4 @@ impl Display for OIDCAgentError {
     }
 }
 
-impl Error for OIDCAgentError {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        None
-    }
-}
+impl Error for OIDCAgentError {}

@@ -16,7 +16,7 @@ pub struct AccessTokenRequest {
     request: RequestType,
     account: Option<String>,
     issuer: Option<Url>,
-    min_valid_period: Option<usize>,
+    min_valid_period: Option<u64>, //Always seconds
     application_hint: Option<String>,
     scope: Option<String>,
     audience: Option<String>,
