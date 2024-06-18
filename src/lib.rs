@@ -1,16 +1,11 @@
-pub mod entities;
 pub mod requests;
 pub mod responses;
 
-use entities::AccessTokenRequest;
-use entities::AccessTokenResponse;
-use entities::AccountsRequest;
-use entities::AccountsResponse;
-use entities::MytokenRequest;
-use entities::MytokenResponse;
-use entities::OIDCAgentError;
-use entities::OIDCAgentResponse;
-use entities::Status;
+use requests::{AccessTokenRequest, AccountsRequest, MytokenRequest};
+use responses::{
+    AccessTokenResponse, AccountsResponse, MytokenResponse, OIDCAgentError, OIDCAgentResponse,
+    Status,
+};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::env;
