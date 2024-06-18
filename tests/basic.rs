@@ -18,8 +18,5 @@ fn test_1() {
     assert!(mytoken.is_err());
 
     let loaded_accounts = client.get_loaded_accounts().unwrap();
-    assert_eq!(
-        loaded_accounts,
-        vec!["nowy".to_string(), "mytoken".to_string()]
-    );
+    assert_eq!(loaded_accounts, vec!["mytoken".to_string()]);
 }
