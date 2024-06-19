@@ -21,11 +21,11 @@ pub trait Request: Serialize {
 }
 pub trait Response: DeserializeOwned {}
 
-pub struct Client {
+pub struct Agent {
     socket_path: PathBuf,
 }
 
-impl Client {
+impl Agent {
     pub fn new() -> DynResult<Self> {
         let socket_path = env::var("OIDC_SOCK")?;
         Ok(Self {

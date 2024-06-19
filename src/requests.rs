@@ -18,11 +18,23 @@ pub enum RequestType {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AccessTokenRequest {
     request: RequestType,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     account: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     issuer: Option<Url>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     min_valid_period: Option<u64>, //Always seconds
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     application_hint: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     scope: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     audience: Option<String>,
 }
 
@@ -60,7 +72,11 @@ impl Request for AccessTokenRequest {
 pub struct MytokenRequest {
     request: RequestType,
     account: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     mytoken_profile: Option<Profile>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     application_hint: Option<String>,
 }
 
@@ -69,17 +85,12 @@ impl MytokenRequest {
         Self {
             request: RequestType::MYTOKEN,
             account: account.to_string(),
-            mytoken_profile: Some(Profile::basic()),
+            mytoken_profile: None,
             application_hint: None,
         }
     }
     pub fn builder(account: &str) -> MytokenRequestBuilder {
-        MytokenRequestBuilder(Self {
-            request: RequestType::MYTOKEN,
-            account: account.to_string(),
-            mytoken_profile: None,
-            application_hint: None,
-        })
+        MytokenRequestBuilder(MytokenRequest::basic(account))
     }
 }
 
@@ -142,15 +153,7 @@ impl AccessTokenRequestBuilder {
     }
     pub fn build(self) -> Result<AccessTokenRequest, &'static str> {
         if self.0.account.is_some() || self.0.issuer.is_some() {
-            Ok(AccessTokenRequest {
-                request: RequestType::ACCESS_TOKEN,
-                account: self.0.account,
-                issuer: self.0.issuer,
-                min_valid_period: self.0.min_valid_period,
-                application_hint: self.0.application_hint,
-                scope: self.0.scope,
-                audience: self.0.audience,
-            })
+            Ok(self.0)
         } else {
             Err("Failed to build request! Account name or issuer required!")
         }
@@ -172,11 +175,6 @@ impl MytokenRequestBuilder {
         if self.0.account.trim().is_empty() {
             return Err("Failed to build request! Account name cannot be empty!");
         }
-        Ok(MytokenRequest {
-            request: RequestType::MYTOKEN,
-            account: self.0.account,
-            mytoken_profile: self.0.mytoken_profile,
-            application_hint: self.0.application_hint,
-        })
+        Ok(self.0)
     }
 }

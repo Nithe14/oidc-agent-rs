@@ -2,6 +2,7 @@ use crate::mytoken::{Capability, MytokenType, Restriction, Rotation};
 use crate::Response;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::error::Error;
 use std::fmt::Display;
 use url::Url;
@@ -57,8 +58,8 @@ pub struct MytokenResponse {
     transfer_code: Option<String>,
     expires_in: Option<u64>, //Number of seconds according to the Mytoken documentation
     mom_id: Option<String>,
-    capabilities: Option<Vec<Capability>>,
-    restrictions: Option<Vec<Restriction>>,
+    capabilities: Option<HashSet<Capability>>,
+    restrictions: Option<HashSet<Restriction>>,
     rotation: Option<Rotation>,
 }
 
