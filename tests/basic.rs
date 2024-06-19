@@ -1,4 +1,4 @@
-use mytoken::Capabilities;
+use mytoken::Capability;
 use oidc_agent_rs::*;
 
 #[test]
@@ -25,11 +25,11 @@ fn test_1() {
 
 #[test]
 fn test_caps() {
-    let cap = Capabilities::MytokenCreate;
+    let cap = Capability::MytokenCreate;
     let serialized = serde_json::to_string(&cap).unwrap();
 
     let cap1 = serde_json::json!("tokeninfo:introspect");
-    let des: Capabilities = serde_json::from_value(cap1).unwrap();
+    let des: Capability = serde_json::from_value(cap1).unwrap();
     println!("{}", serialized);
     println!("{:#?}", des);
     assert_eq!(&serialized, "tokeninfo:subtokens");

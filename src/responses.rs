@@ -1,3 +1,4 @@
+use crate::mytoken::{Capability, MytokenType, Restriction, Rotation};
 use crate::Response;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -51,6 +52,14 @@ pub struct MytokenResponse {
 
     #[serde(with = "chrono::serde::ts_seconds")]
     expires_at: DateTime<Utc>,
+
+    mytoken_type: Option<MytokenType>,
+    transfer_code: Option<String>,
+    expires_in: Option<u64>, //Number of seconds according to the Mytoken documentation
+    mom_id: Option<String>,
+    capabilities: Option<Vec<Capability>>,
+    restrictions: Option<Vec<Restriction>>,
+    rotation: Option<Rotation>,
 }
 
 impl Response for MytokenResponse {}

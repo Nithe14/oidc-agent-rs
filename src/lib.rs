@@ -3,10 +3,7 @@ pub mod requests;
 pub mod responses;
 
 use requests::{AccessTokenRequest, AccountsRequest, MytokenRequest};
-use responses::{
-    AccessTokenResponse, AccountsResponse, MytokenResponse, OIDCAgentError, OIDCAgentResponse,
-    Status,
-};
+use responses::{OIDCAgentError, OIDCAgentResponse, Status};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::env;
@@ -19,8 +16,10 @@ use std::path::PathBuf;
 
 type DynResult<T> = Result<T, Box<dyn Error>>;
 
-pub trait Request {}
-pub trait Response {}
+pub trait Request: Serialize {
+    type Response: Response;
+}
+pub trait Response: DeserializeOwned {}
 
 pub struct Client {
     socket_path: PathBuf,
@@ -40,26 +39,25 @@ impl Client {
 
     pub fn get_access_token(&self, account_shortname: &str) -> DynResult<String> {
         let request = AccessTokenRequest::basic(account_shortname);
-        let response: AccessTokenResponse = self.get(request)?;
+        let response = self.get(request)?;
         Ok(response.access_token)
     }
 
     pub fn get_mytoken(&self, account_shortname: &str) -> DynResult<String> {
         let request = MytokenRequest::basic(account_shortname);
-        let response: MytokenResponse = self.get(request)?;
+        let response = self.get(request)?;
         Ok(response.mytoken)
     }
 
     pub fn get_loaded_accounts(&self) -> DynResult<Vec<String>> {
         let request = AccountsRequest::new();
-        let response: AccountsResponse = self.get(request)?;
+        let response = self.get(request)?;
         Ok(response.info)
     }
 
-    pub fn get<T, R>(&self, request: T) -> DynResult<R>
+    pub fn get<T>(&self, request: T) -> DynResult<T::Response>
     where
-        T: Request + Serialize,
-        R: Response + DeserializeOwned,
+        T: Request,
     {
         let mut socket = UnixStream::connect(Path::new(&self.socket_path))?;
         let req = serde_json::to_vec(&request)?;
@@ -70,7 +68,7 @@ impl Client {
         let resp: OIDCAgentResponse = serde_json::from_slice(&buffer)?;
         match resp.status() {
             Status::SUCCESS => {
-                let r: R = serde_json::from_slice(&buffer)?;
+                let r: T::Response = serde_json::from_slice(&buffer)?;
                 Ok(r)
             }
             Status::FAILURE => {
