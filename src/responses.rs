@@ -1,6 +1,7 @@
-use crate::mytoken::{Capability, MytokenType, Restriction, Rotation};
-use crate::Response;
+use crate::mytoken::{Capability, MyTokenType, Restriction, Rotation};
+use crate::{Response, Token};
 use chrono::{DateTime, Utc};
+use derive_getters::Getters;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::error::Error;
@@ -23,20 +24,14 @@ impl Display for Status {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Getters)]
 pub struct OIDCAgentResponse {
     status: Status,
 }
 
-impl OIDCAgentResponse {
-    pub fn status(self) -> Status {
-        self.status.clone()
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Getters)]
 pub struct AccessTokenResponse {
-    pub access_token: String,
+    access_token: Token,
     issuer: Url,
 
     #[serde(with = "chrono::serde::ts_seconds")]
@@ -45,16 +40,16 @@ pub struct AccessTokenResponse {
 
 impl Response for AccessTokenResponse {}
 
-#[derive(Serialize, Deserialize)]
-pub struct MytokenResponse {
-    pub mytoken: String,
+#[derive(Serialize, Deserialize, Getters)]
+pub struct MyTokenResponse {
+    mytoken: Token,
     mytoken_issuer: Url,
     oidc_issuer: Url,
 
     #[serde(with = "chrono::serde::ts_seconds")]
     expires_at: DateTime<Utc>,
 
-    mytoken_type: Option<MytokenType>,
+    mytoken_type: Option<MyTokenType>,
     transfer_code: Option<String>,
     expires_in: Option<u64>, //Number of seconds according to the Mytoken documentation
     mom_id: Option<String>,
@@ -63,11 +58,11 @@ pub struct MytokenResponse {
     rotation: Option<Rotation>,
 }
 
-impl Response for MytokenResponse {}
+impl Response for MyTokenResponse {}
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Getters)]
 pub struct AccountsResponse {
-    pub info: Vec<String>,
+    info: Vec<String>,
 }
 
 impl Response for AccountsResponse {}

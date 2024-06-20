@@ -29,7 +29,7 @@ impl Display for TokenInfoPerms {
 }
 
 #[derive(Debug, PartialEq, Hash, Eq)]
-pub enum MytokenMgmtPerms {
+pub enum MyTokenMgmtPerms {
     //manage_mytoken:list
     List,
     //manage_mytoken:revoke
@@ -40,7 +40,7 @@ pub enum MytokenMgmtPerms {
     All,
 }
 
-impl Display for MytokenMgmtPerms {
+impl Display for MyTokenMgmtPerms {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
             Self::List => write!(f, "manage_mytoken:list"),
@@ -84,8 +84,8 @@ impl Display for SettingsPerms {
 pub enum Capability {
     AT,
     TokenInfo(TokenInfoPerms),
-    MytokenMgmt(MytokenMgmtPerms),
-    MytokenCreate,
+    MyTokenMgmt(MyTokenMgmtPerms),
+    MyTokenCreate,
     Settings(SettingsPerms),
 }
 
@@ -97,8 +97,8 @@ impl Serialize for Capability {
         match *self {
             Capability::AT => serializer.serialize_str("AT"),
             Capability::TokenInfo(ref perm) => serializer.serialize_str(&perm.to_string()),
-            Capability::MytokenMgmt(ref perm) => serializer.serialize_str(&perm.to_string()),
-            Capability::MytokenCreate => serializer.serialize_str("create_mytoken"),
+            Capability::MyTokenMgmt(ref perm) => serializer.serialize_str(&perm.to_string()),
+            Capability::MyTokenCreate => serializer.serialize_str("create_mytoken"),
             Capability::Settings(ref perm) => serializer.serialize_str(&perm.to_string()),
         }
     }
@@ -116,11 +116,11 @@ impl<'de> Deserialize<'de> for Capability {
             "tokeninfo:introspect" => Ok(Capability::TokenInfo(TokenInfoPerms::Introspect)),
             "tokeninfo:subtokens" => Ok(Capability::TokenInfo(TokenInfoPerms::Subtokens)),
             "tokeninfo:history" => Ok(Capability::TokenInfo(TokenInfoPerms::History)),
-            "manage_mytoken" => Ok(Capability::MytokenMgmt(MytokenMgmtPerms::All)),
-            "manage_mytoken:list" => Ok(Capability::MytokenMgmt(MytokenMgmtPerms::List)),
-            "manage_mytoken:revoke" => Ok(Capability::MytokenMgmt(MytokenMgmtPerms::Revoke)),
-            "manage_mytoken:history" => Ok(Capability::MytokenMgmt(MytokenMgmtPerms::History)),
-            "create_mytoken" => Ok(Capability::MytokenCreate),
+            "manage_mytoken" => Ok(Capability::MyTokenMgmt(MyTokenMgmtPerms::All)),
+            "manage_mytoken:list" => Ok(Capability::MyTokenMgmt(MyTokenMgmtPerms::List)),
+            "manage_mytoken:revoke" => Ok(Capability::MyTokenMgmt(MyTokenMgmtPerms::Revoke)),
+            "manage_mytoken:history" => Ok(Capability::MyTokenMgmt(MyTokenMgmtPerms::History)),
+            "create_mytoken" => Ok(Capability::MyTokenCreate),
             "settings" => Ok(Capability::Settings(SettingsPerms::All)),
             "settings:grants" => Ok(Capability::Settings(SettingsPerms::Grants)),
             "settings:grants:ssh" => Ok(Capability::Settings(SettingsPerms::Ssh)),
@@ -135,7 +135,7 @@ impl<'de> Deserialize<'de> for Capability {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 #[allow(non_camel_case_types)]
-pub enum MytokenType {
+pub enum MyTokenType {
     TOKEN,
     SHORT_TOKEN,
     TRANSER_CODE,

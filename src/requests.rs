@@ -1,6 +1,6 @@
 use crate::{
     mytoken::Profile,
-    responses::{AccessTokenResponse, AccountsResponse, MytokenResponse},
+    responses::{AccessTokenResponse, AccountsResponse, MyTokenResponse},
     Request,
 };
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ use url::Url;
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 #[allow(non_camel_case_types)]
-pub enum RequestType {
+pub(crate) enum RequestType {
     ACCESS_TOKEN,
     MYTOKEN,
     LOADED_ACCOUNTS,
@@ -65,11 +65,11 @@ impl AccessTokenRequest {
 }
 
 impl Request for AccessTokenRequest {
-    type Response = AccessTokenResponse;
+    type SuccessResponse = AccessTokenResponse;
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct MytokenRequest {
+pub struct MyTokenRequest {
     request: RequestType,
     account: String,
 
@@ -80,7 +80,7 @@ pub struct MytokenRequest {
     application_hint: Option<String>,
 }
 
-impl MytokenRequest {
+impl MyTokenRequest {
     pub fn basic(account: &str) -> Self {
         Self {
             request: RequestType::MYTOKEN,
@@ -89,16 +89,16 @@ impl MytokenRequest {
             application_hint: None,
         }
     }
-    pub fn builder(account: &str) -> MytokenRequestBuilder {
-        MytokenRequestBuilder(MytokenRequest::basic(account))
+    pub fn builder(account: &str) -> MyTokenRequestBuilder {
+        MyTokenRequestBuilder(MyTokenRequest::basic(account))
     }
 }
 
-impl Request for MytokenRequest {
-    type Response = MytokenResponse;
+impl Request for MyTokenRequest {
+    type SuccessResponse = MyTokenResponse;
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct AccountsRequest {
     request: RequestType,
 }
@@ -112,7 +112,7 @@ impl AccountsRequest {
 }
 
 impl Request for AccountsRequest {
-    type Response = AccountsResponse;
+    type SuccessResponse = AccountsResponse;
 }
 
 pub struct AccessTokenRequestBuilder(AccessTokenRequest);
@@ -160,9 +160,9 @@ impl AccessTokenRequestBuilder {
     }
 }
 
-pub struct MytokenRequestBuilder(MytokenRequest);
+pub struct MyTokenRequestBuilder(MyTokenRequest);
 
-impl MytokenRequestBuilder {
+impl MyTokenRequestBuilder {
     pub fn mytoken_profile(mut self, mytoken_profile: Profile) -> Self {
         self.0.mytoken_profile = Some(mytoken_profile);
         self
@@ -171,7 +171,7 @@ impl MytokenRequestBuilder {
         self.0.application_hint = Some(application_hint.to_string());
         self
     }
-    pub fn build(self) -> Result<MytokenRequest, &'static str> {
+    pub fn build(self) -> Result<MyTokenRequest, &'static str> {
         if self.0.account.trim().is_empty() {
             return Err("Failed to build request! Account name cannot be empty!");
         }
