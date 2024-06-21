@@ -159,7 +159,7 @@ impl Agent {
     /// # Errors
     /// The method returns an [`env::VarError`] if the environment variable `OIDC_SOCK` is not set or cannot be retrieved.
     ///
-    /// The method returns an [`std::io::Result`] if connection with provided socket is not
+    /// The method returns an [`std::io::Error`] if connection with provided socket is not
     /// possible.
     pub fn new() -> AgentResult<Self> {
         let socket_var = env::var("OIDC_SOCK")?;
