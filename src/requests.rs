@@ -6,7 +6,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
 #[allow(non_camel_case_types)]
 pub(crate) enum RequestType {
@@ -15,7 +15,7 @@ pub(crate) enum RequestType {
     LOADED_ACCOUNTS,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AccessTokenRequest {
     request: RequestType,
 
@@ -68,7 +68,7 @@ impl Request for AccessTokenRequest {
     type SuccessResponse = AccessTokenResponse;
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MyTokenRequest {
     request: RequestType,
     account: String,
@@ -98,7 +98,7 @@ impl Request for MyTokenRequest {
     type SuccessResponse = MyTokenResponse;
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AccountsRequest {
     request: RequestType,
 }
@@ -118,7 +118,7 @@ impl Request for AccountsRequest {
 pub struct AccessTokenRequestBuilder(AccessTokenRequest);
 
 impl AccessTokenRequestBuilder {
-    pub fn account(mut self, account: &str) -> Self {
+    pub fn account<T: ToString>(mut self, account: T) -> Self {
         self.0.account = Some(account.to_string());
         self
     }
@@ -131,23 +131,23 @@ impl AccessTokenRequestBuilder {
         self.0.min_valid_period = Some(min_valid_period);
         self
     }
-    pub fn application_hint(mut self, application_hint: &str) -> Self {
+    pub fn application_hint<T: ToString>(mut self, application_hint: T) -> Self {
         self.0.application_hint = Some(application_hint.to_string());
         self
     }
-    pub fn add_scope(mut self, scope: &str) -> Self {
+    pub fn add_scope<T: ToString>(&mut self, scope: T) {
         if let Some(ref mut curr_scope) = self.0.scope {
-            curr_scope.push_str(scope);
+            curr_scope.push_str(" ");
+            curr_scope.push_str(&scope.to_string());
         } else {
-            self.0.scope = Some(scope.to_string());
+            self.0.scope = Some(scope.to_string().trim().to_string());
         }
-        self
     }
-    pub fn scopes(mut self, scopes: &str) -> Self {
+    pub fn scopes<T: ToString>(mut self, scopes: T) -> Self {
         self.0.scope = Some(scopes.to_string());
         self
     }
-    pub fn audience(mut self, audience: &str) -> Self {
+    pub fn audience<T: ToString>(mut self, audience: T) -> Self {
         self.0.audience = Some(audience.to_string());
         self
     }
@@ -163,11 +163,11 @@ impl AccessTokenRequestBuilder {
 pub struct MyTokenRequestBuilder(MyTokenRequest);
 
 impl MyTokenRequestBuilder {
-    pub fn mytoken_profile(mut self, mytoken_profile: Profile) -> Self {
-        self.0.mytoken_profile = Some(mytoken_profile);
+    pub fn mytoken_profile(mut self, mytoken_profile: &Profile) -> Self {
+        self.0.mytoken_profile = Some(mytoken_profile.clone());
         self
     }
-    pub fn application_hint(mut self, application_hint: &str) -> Self {
+    pub fn application_hint<T: ToString>(mut self, application_hint: T) -> Self {
         self.0.application_hint = Some(application_hint.to_string());
         self
     }
