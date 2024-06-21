@@ -158,8 +158,15 @@ impl Agent {
     /// It attempts to retrieve the socket path from the `OIDC_SOCK` environment variable.
     /// # Errors
     /// The method returns an [`env::VarError`] if the environment variable `OIDC_SOCK` is not set or cannot be retrieved.
-    pub fn new() -> Result<Agent, env::VarError> {
-        let socket_path = env::var("OIDC_SOCK")?;
+    ///
+    /// The method returns an [`std::io::Result`] if connection with provided socket is not
+    /// possible.
+    pub fn new() -> AgentResult<Self> {
+        let socket_var = env::var("OIDC_SOCK")?;
+        let socket_path = Path::new(&socket_var);
+
+        //Check the connection
+        UnixStream::connect(socket_path)?;
         Ok(Self {
             socket_path: socket_path.into(),
         })
