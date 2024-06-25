@@ -126,7 +126,8 @@ pub mod mytoken;
 pub mod requests;
 pub mod responses;
 
-pub use errors::{AgentError, Error};
+use errors::AgentError;
+pub use errors::Error;
 use requests::{AccessTokenRequest, AccountsRequest, MyTokenRequest};
 use responses::{AccessTokenResponse, MyTokenResponse};
 use responses::{OIDCAgentResponse, Status};
