@@ -121,18 +121,19 @@
 //#![feature(doc_auto_cfg)]
 #![cfg(unix)]
 
+pub mod errors;
 pub mod mytoken;
 pub mod requests;
 pub mod responses;
 
+pub use errors::{AgentError, Error};
 use requests::{AccessTokenRequest, AccountsRequest, MyTokenRequest};
 use responses::{AccessTokenResponse, MyTokenResponse};
-use responses::{OIDCAgentError, OIDCAgentResponse, Status};
+use responses::{OIDCAgentResponse, Status};
 use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use serde::Serialize;
 use std::env;
-use std::error::Error;
 use std::fmt::Debug;
 use std::io::prelude::*;
 use std::io::Write;
@@ -140,7 +141,7 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::path::PathBuf;
 
-type AgentResult<T> = Result<T, Box<dyn Error>>;
+pub type AgentResult<T> = Result<T, Error>;
 
 pub trait Request: Serialize {
     type SuccessResponse: Response;
@@ -218,24 +219,64 @@ impl Agent {
         Ok(response)
     }
 
+    /// Tries to obtain [mytoken](https://mytoken-docs.data.kit.edu/) using only `account_shortname`. No more fields are added to the
+    /// request.
+    ///
+    /// The [`requests::MyTokenRequest::basic`] is used as a request here.
+    /// # Errors
+    /// Errors depends on the [`Agent::send_request`] response.
+    ///
+    /// # Examples
+    /// ```
+    /// let mytoken = agent.get_mytoken("shortname")?;
+    /// assert_eq!(mytoken.secret(), "eyJh...");
+    /// ```
     pub fn get_mytoken(&self, account_shortname: &str) -> AgentResult<Token> {
         let request = MyTokenRequest::basic(account_shortname);
         let response = self.send_request(request)?;
         Ok(response.mytoken().clone())
     }
 
+    /// The same as [`Agent::get_mytoken`], but if response is success, the
+    /// [`responses::MyTokenResponse`] is returned, so you can get additional fields.
+    /// # Examples
+    /// ```
+    /// let mt = agent.get_mytoken_full("shortname")?;
+    /// assert_eq!(mt.mytoken_issuer(), mt_issuer);
+    /// assert_eq!(mt.oidc_issuer(), issuer);
+    /// assert_eq!(mt.capabilites(), vec![Capability::AT]);
+    /// assert_eq!(mt.mytoken().secret(), mytoken)
+    /// ```
     pub fn get_mytoken_full(&self, account_shortname: &str) -> AgentResult<MyTokenResponse> {
         let request = MyTokenRequest::basic(account_shortname);
         let response = self.send_request(request)?;
         Ok(response)
     }
 
+    /// Tries to get a list of loaded user accounts. Every account that was loaded to the agent via
+    /// e.g `oidc-add <account_shortname>` will be returned.
+    /// # Errors
+    /// Errors depends on the [`Agent::send_request`] response.
+    /// # Examples
+    /// ```
+    /// let accounts = agent.get_loaded_accounts()?;
+    /// assert_eq!(accounts, vec!["my_account"]);
+    /// ```
     pub fn get_loaded_accounts(&self) -> AgentResult<Vec<String>> {
         let request = AccountsRequest::new();
         let response = self.send_request(request)?;
         Ok(response.info().clone())
     }
 
+    /// Consumes and sends the [`Request`] to the oidc-agent stream socket and tries retrives the [`Response`].
+    /// # Errors
+    /// to_do!();
+    /// # Examples
+    /// ```
+    /// let req = AccessTokenRequest::basic("mytoken");
+    /// let resp = agent.send_request(req)?;
+    /// assert_eq!(resp.access_token().secret(), access_token);
+    /// ```
     pub fn send_request<T>(&self, request: T) -> AgentResult<T::SuccessResponse>
     where
         T: Request,
@@ -253,8 +294,8 @@ impl Agent {
                 Ok(r)
             }
             Status::FAILURE => {
-                let r: OIDCAgentError = serde_json::from_slice(&buffer)?;
-                Err(Box::new(r))
+                let r: AgentError = serde_json::from_slice(&buffer)?;
+                Err(r.into())
             }
         }
     }

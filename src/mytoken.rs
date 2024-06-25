@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fmt::Display;
 
+use crate::AgentResult;
+
 #[derive(Debug, PartialEq, Hash, Eq, Clone)]
 pub enum TokenInfoPerms {
     //tokeninfo:introspect
@@ -327,11 +329,11 @@ impl RotationBuilder {
         self.0.auto_revoke = Some(false);
         self
     }
-    pub fn build(self) -> Result<Rotation, &'static str> {
+    pub fn build(self) -> AgentResult<Rotation> {
         if self.0.on_AT == Some(true) || self.0.on_other == Some(true) {
             return Ok(self.0);
         }
-        Err("Failed to build rotation object! on_AT or on_other must be set!")
+        Err("Failed to build rotation object! on_AT or on_other must be set!".into())
     }
 }
 

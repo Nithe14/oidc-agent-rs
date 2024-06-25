@@ -1,7 +1,7 @@
 use crate::{
     mytoken::Profile,
     responses::{AccessTokenResponse, AccountsResponse, MyTokenResponse},
-    Request,
+    AgentResult, Request,
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -122,7 +122,7 @@ impl AccessTokenRequestBuilder {
         self.0.account = Some(account.to_string());
         self
     }
-    pub fn issuer(mut self, issuer: &str) -> Result<Self, url::ParseError> {
+    pub fn issuer(mut self, issuer: &str) -> AgentResult<Self> {
         let iss = Url::parse(issuer)?;
         self.0.issuer = Some(iss);
         Ok(self)
@@ -151,11 +151,11 @@ impl AccessTokenRequestBuilder {
         self.0.audience = Some(audience.to_string());
         self
     }
-    pub fn build(self) -> Result<AccessTokenRequest, &'static str> {
+    pub fn build(self) -> AgentResult<AccessTokenRequest> {
         if self.0.account.is_some() || self.0.issuer.is_some() {
             Ok(self.0)
         } else {
-            Err("Failed to build request! Account name or issuer required!")
+            Err("Failed to build request! Account name or issuer required!".into())
         }
     }
 }
@@ -171,9 +171,9 @@ impl MyTokenRequestBuilder {
         self.0.application_hint = Some(application_hint.to_string());
         self
     }
-    pub fn build(self) -> Result<MyTokenRequest, &'static str> {
+    pub fn build(self) -> AgentResult<MyTokenRequest> {
         if self.0.account.trim().is_empty() {
-            return Err("Failed to build request! Account name cannot be empty!");
+            return Err("Failed to build request! Account name cannot be empty!".into());
         }
         Ok(self.0)
     }

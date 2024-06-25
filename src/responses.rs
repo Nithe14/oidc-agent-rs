@@ -66,21 +66,3 @@ pub struct AccountsResponse {
 }
 
 impl Response for AccountsResponse {}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct OIDCAgentError {
-    error: String,
-    info: Option<String>,
-}
-
-impl Display for OIDCAgentError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(info) = &self.info {
-            write!(f, "{}: {}", &self.error, info)
-        } else {
-            write!(f, "{}", &self.error)
-        }
-    }
-}
-
-impl Error for OIDCAgentError {}
