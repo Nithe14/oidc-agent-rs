@@ -8,12 +8,11 @@
 //!
 //! # Obtaining access_token
 //! ## Basic usage
-//! To obtain access_token by profile shortname from the agent run the following code in `main.rs`:
+//! To obtain access_token by account shortname run the following code in `main.rs`:
 //! ```
-//! use oidc_agent_rs::Agent;
-//! use std::error::Error;
+//! use oidc_agent_rs::{Agent, Error};
 //!
-//! fn main() -> Result<(), Box<dyn Error>> {
+//! fn main() -> Result<(), Error> {
 //!    let agent = Agent::new()?;
 //!    let access_token = agent.get_access_token("profile_shortname")?;
 //!
@@ -21,7 +20,7 @@
 //!    Ok(())
 //! }
 //! ```
-//! The `secret()` method is required to obtain token as a `&str` value. Otherwise the Token pseudostruct
+//! The `secret()` method is required to obtain token as a `&str` value. Otherwise the [ `Token` ] pseudostruct
 //! would be returned.
 //!
 //! ## Advanced requests
@@ -31,10 +30,9 @@
 //!
 //! Example:
 //! ```
-//! use oidc_agent_rs::{requests::AccessTokenRequest, Agent};
-//! use std::error::Error;
+//! use oidc_agent_rs::{requests::AccessTokenRequest, Agent, Error};
 //!
-//! fn main() -> Result<(), Box<dyn Error>> {
+//! fn main() -> Result<(), Error> {
 //!     let agent = Agent::new()?;
 //!     
 //!     //obtaining access_token by issuer only (no shortname needed)
@@ -55,14 +53,13 @@
 //!
 //! # Obtaining mytoken
 //! ## Basic usage
-//! Obtaining mytoken using only profile shortname is very similar to obtaining access_token.
+//! Obtaining mytoken using only account shortname is very similar to obtaining access_token.
 //!
 //! Example:
 //! ```
-//! use oidc_agent_rs::Agent;
-//! use std::error::Error;
+//! use oidc_agent_rs::{Agent, Error};
 //!
-//! fn main() -> Result<(), Box<dyn Error>> {
+//! fn main() -> Result<(), Error> {
 //!     let agent = Agent::new()?;
 //!
 //!     let mytoken = agent.get_mytoken("mytoken")?;
@@ -72,21 +69,23 @@
 //!     Ok(())
 //! }
 //! ```
+//! Once more the secret() method is used to obtain token as a &str value.
 //!
 //! ## Advanced requests
 //! If you want to obtain new mytoken using specific Mytoken profile, you have to create new
-//! [`mytoken::Profile`] element. This takes 0 or more [`mytoken::Capability`], 0 or more [`mytoken::Restriction`] and one or
-//! none [`mytoken::Rotation`]. Empty profile is possible but not recommended.
+//! [`mytoken::Profile`] element. All profile objects documented in the Mytoken documentation are
+//! supported. You can add multiple [`mytoken::Capability`] and [`mytoken::Restriction`] elements
+//! and single [`mytoken::Rotation`] element to the `[mytoken::Profile]`. Then add the
+//! [`mytoken::Profile`] element to the [`requests::MyTokenRequest`] element.
 //!
 //! Example:
 //!
 //!```
 //! use oidc_agent_rs::mytoken::{Capability, Profile, Restriction, Rotation, TokenInfoPerms};
 //! use oidc_agent_rs::requests::MyTokenRequest;
-//! use oidc_agent_rs::Agent;
-//! use std::error::Error;
+//! use oidc_agent_rs::{Agent, Error};
 //!
-//! fn main() -> Result<(), Box<dyn Error>> {
+//! fn main() -> Result<(), Error> {
 //!     let agent = Agent::new()?;
 //!     let mut profile = Profile::new();
 //!
@@ -159,10 +158,9 @@ impl Agent {
     ///
     /// It attempts to retrieve the socket path from the `OIDC_SOCK` environment variable.
     /// # Errors
-    /// The method returns an [`env::VarError`] if the environment variable `OIDC_SOCK` is not set or cannot be retrieved.
-    ///
-    /// The method returns an [`std::io::Error`] if connection with provided socket is not
-    /// possible.
+    /// The method returns an coresponding [`Error`] if:
+    /// - the environment variable `OIDC_SOCK` is not set or cannot be retrieved.
+    /// - connection with provided socket is not possible.
     pub fn new() -> AgentResult<Self> {
         let socket_var = env::var("OIDC_SOCK")?;
         let socket_path = Path::new(&socket_var);
@@ -189,7 +187,7 @@ impl Agent {
     ///
     /// The [`requests::AccessTokenRequest::basic`] is used as a request here.
     /// # Errors
-    /// Errors depends on the [`Agent::send_request`] response.
+    /// The same as [`Agent::send_request`].
     ///
     /// # Examples
     /// ```
@@ -225,7 +223,7 @@ impl Agent {
     ///
     /// The [`requests::MyTokenRequest::basic`] is used as a request here.
     /// # Errors
-    /// Errors depends on the [`Agent::send_request`] response.
+    /// The same as [`Agent::send_request`].
     ///
     /// # Examples
     /// ```
@@ -254,10 +252,10 @@ impl Agent {
         Ok(response)
     }
 
-    /// Tries to get a list of loaded user accounts. Every account that was loaded to the agent via
+    /// Tries to get a list of loaded user accounts. Every account that was loaded via
     /// e.g `oidc-add <account_shortname>` will be returned.
     /// # Errors
-    /// Errors depends on the [`Agent::send_request`] response.
+    /// The same as [`Agent::send_request`].
     /// # Examples
     /// ```
     /// let accounts = agent.get_loaded_accounts()?;
@@ -269,9 +267,13 @@ impl Agent {
         Ok(response.info().clone())
     }
 
-    /// Consumes and sends the [`Request`] to the oidc-agent stream socket and tries retrives the [`Response`].
+    /// Consumes the [`Request`] and sends it to the oidc-agent stream socket and tries retrives the [`Response`].
     /// # Errors
-    /// to_do!();
+    /// The method returns an coresponding [`Error`] if:
+    /// - connection with socket is not possible anymore,
+    /// - cannot write or read the socket,
+    /// - the socket response cannot be deserialized,
+    /// - the oidc-agnet returned an error.
     /// # Examples
     /// ```
     /// let req = AccessTokenRequest::basic("mytoken");
@@ -302,10 +304,12 @@ impl Agent {
     }
 }
 
+/// Token pseudostruct. This struct exists solely for debugging purposes and does not compromise the actual token.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Token(String);
 
 impl Token {
+    /// Returns the actual token.
     pub fn secret(&self) -> &str {
         &self.0
     }
