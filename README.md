@@ -1,19 +1,18 @@
-Unix only [`oidc-agent`]( https://indigo-dc.gitbook.io/oidc-agent ) library for Rust
+ Unix only [`oidc-agent`]( https://indigo-dc.gitbook.io/oidc-agent ) library for Rust
 
- ## Description
+ # Description
 
  This crate is an interface to `oidc-agent` IPC-API.
 
  The `oidc-agent` must be running under the user system and OIDC_SOCK must be exported properly.
 
- ## Obtaining access_token
- ### Basic usage
- To obtain access_token by profile shortname from the agent run the following code in `main.rs`:
+ # Obtaining access_token
+ ## Basic usage
+ To obtain access_token by account shortname run the following code in `main.rs`:
  ```rust
- use oidc_agent_rs::Agent;
- use std::error::Error;
+ use oidc_agent_rs::{Agent, Error};
 
- fn main() -> Result<(), Box<dyn Error>> {
+ fn main() -> Result<(), Error> {
     let agent = Agent::new()?;
     let access_token = agent.get_access_token("profile_shortname")?;
 
@@ -21,20 +20,19 @@ Unix only [`oidc-agent`]( https://indigo-dc.gitbook.io/oidc-agent ) library for 
     Ok(())
  }
  ```
- The `secret()` method is required to obtain token as a `&str` value. Otherwise the Token pseudostruct
+ The `secret()` method is required to obtain token as a `&str` value. Otherwise the `Token` pseudostruct
  would be returned.
 
- ### Advanced requests
+ ## Advanced requests
  To obtain access_token with more advanced options you have to use request builder.
  `AccessTokenRequest` has a method to easy build a new request. Then you have to send the request
  directly to the agent and parse the response.
 
  Example:
  ```rust
- use oidc_agent_rs::{requests::AccessTokenRequest, Agent};
- use std::error::Error;
+ use oidc_agent_rs::{requests::AccessTokenRequest, Agent, Error};
 
- fn main() -> Result<(), Box<dyn Error>> {
+ fn main() -> Result<(), Error> {
      let agent = Agent::new()?;
      
      //obtaining access_token by issuer only (no shortname needed)
@@ -53,16 +51,15 @@ Unix only [`oidc-agent`]( https://indigo-dc.gitbook.io/oidc-agent ) library for 
  }
  ```
 
- ## Obtaining mytoken
- ### Basic usage
- Obtaining [ `mytoken` ](https://mytoken-docs.data.kit.edu/) using only profile shortname is very similar to obtaining access_token.
+ # Obtaining mytoken
+ ## Basic usage
+ Obtaining mytoken using only account shortname is very similar to obtaining access_token.
 
  Example:
- ```
- use oidc_agent_rs::Agent;
- use std::error::Error;
+ ```rust
+ use oidc_agent_rs::{Agent, Error};
 
- fn main() -> Result<(), Box<dyn Error>> {
+ fn main() -> Result<(), Error> {
      let agent = Agent::new()?;
 
      let mytoken = agent.get_mytoken("mytoken")?;
@@ -72,21 +69,23 @@ Unix only [`oidc-agent`]( https://indigo-dc.gitbook.io/oidc-agent ) library for 
      Ok(())
  }
  ```
+ Once more the secret() method is used to obtain token as a &str value.
 
- ### Advanced requests
+ ## Advanced requests
  If you want to obtain new mytoken using specific Mytoken profile, you have to create new
- `mytoken::Profile` element. This takes 0 or more `mytoken::Capability`, 0 or more `mytoken::Restriction` and one or
- none `mytoken::Rotation`. Empty profile is possible but not recommended.
+ `Profile` element. All profile objects documented in the Mytoken documentation are
+ supported. You can add multiple `Capability` and `Restriction` elements
+ and single `Rotation` element to the `Profile`. Then add the
+ `Profile` element to the `MyTokenRequest` element.
 
  Example:
 
 ```rust
  use oidc_agent_rs::mytoken::{Capability, Profile, Restriction, Rotation, TokenInfoPerms};
  use oidc_agent_rs::requests::MyTokenRequest;
- use oidc_agent_rs::Agent;
- use std::error::Error;
+ use oidc_agent_rs::{Agent, Error};
 
- fn main() -> Result<(), Box<dyn Error>> {
+ fn main() -> Result<(), Error> {
      let agent = Agent::new()?;
      let mut profile = Profile::new();
 
@@ -117,4 +116,3 @@ Unix only [`oidc-agent`]( https://indigo-dc.gitbook.io/oidc-agent ) library for 
      Ok(())
  }
 ```
-
