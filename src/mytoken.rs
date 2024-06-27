@@ -9,13 +9,13 @@ use crate::AgentResult;
 
 #[derive(Debug, PartialEq, Hash, Eq, Clone)]
 pub enum TokenInfoPerms {
-    //tokeninfo:introspect
+    ///Mytoken `tokeninfo:introspect` value.
     Introspect,
-    //tokeninfo:subtokens
+    ///Mytoken `tokeninfo:subtokens` value.
     Subtokens,
-    //tokeninfo:history
+    ///Mytoken `tokeninfo:history` value.
     History,
-    //tokeninfo
+    ///Mytoken `tokeninfo` value.
     All,
 }
 
@@ -32,13 +32,13 @@ impl Display for TokenInfoPerms {
 
 #[derive(Debug, PartialEq, Hash, Eq, Clone)]
 pub enum MgmtPerms {
-    //manage_mytoken:list
+    /// Mytoken `manage_mytoken:list` value.
     List,
-    //manage_mytoken:revoke
+    ///Mytoken `manage_mytoken:revoke` value.
     Revoke,
-    //manage_mytoken:history
+    ///Mytoken `manage_mytoken:history` value.
     History,
-    //manage_mytoken
+    ///Mytoken `manage_mytoken` value.
     All,
 }
 
@@ -55,17 +55,17 @@ impl Display for MgmtPerms {
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub enum SettingsPerms {
-    //settings:grants:ssh
+    ///Mytoken `settings:grants:ssh` value.
     Ssh,
-    //settings:grants
+    ///Mytoken `settings:grants` value.
     Grants,
-    //settings
+    ///Mytoken `settings` value
     All,
-    //read@settings:grants:ssh
+    ///Mytoken `read@settings:grants:ssh` value.
     ReadSsh,
-    //read@settings:grants
+    ///Mytoken `read@settings:grants` value.
     ReadGrants,
-    //read@settings
+    ///Mytoken `read@settings` value.
     ReadAll,
 }
 
