@@ -75,7 +75,7 @@
 //! If you want to obtain new mytoken using specific Mytoken profile, you have to create new
 //! [`mytoken::Profile`] element. All profile objects documented in the Mytoken documentation are
 //! supported. You can add multiple [`mytoken::Capability`] and [`mytoken::Restriction`] elements
-//! and single [`mytoken::Rotation`] element to the `[mytoken::Profile]`. Then add the
+//! and single [`mytoken::Rotation`] element to the [`mytoken::Profile`]. Then add the
 //! [`mytoken::Profile`] element to the [`requests::MyTokenRequest`] element.
 //!
 //! Example:
@@ -154,7 +154,7 @@ pub struct Agent {
 }
 
 impl Agent {
-    /// Tries to construct a new `Agent`.
+    /// Attempts to construct a new `Agent`.
     ///
     /// It attempts to retrieve the socket path from the `OIDC_SOCK` environment variable.
     /// # Errors
@@ -182,7 +182,7 @@ impl Agent {
         self.socket_path.to_str()
     }
 
-    /// Tries to obtain access_token using only `account_shortname`. No more fields are added to the
+    /// Attempts to obtain access_token using only `account_shortname`. No more fields are added to the
     /// request.
     ///
     /// The [`requests::AccessTokenRequest::basic`] is used as a request here.
@@ -200,8 +200,8 @@ impl Agent {
         Ok(response.access_token().clone())
     }
 
-    /// The same as [`Agent::get_access_token`], but if response is success, the
-    /// [`responses::AccessTokenResponse`] is returned, so you can get additional fields.
+    /// The same as [`Agent::get_access_token`], but if the response is successful, the
+    /// [`responses::AccessTokenResponse`] is returned, allowing you to access additional fields.
     /// # Examples
     /// ```
     /// let at = agent.get_access_token_full("shortname")?;
@@ -218,7 +218,7 @@ impl Agent {
         Ok(response)
     }
 
-    /// Tries to obtain [mytoken](https://mytoken-docs.data.kit.edu/) using only `account_shortname`. No more fields are added to the
+    /// Attempts to obtain [mytoken](https://mytoken-docs.data.kit.edu/) using only `account_shortname`. No more fields are added to the
     /// request.
     ///
     /// The [`requests::MyTokenRequest::basic`] is used as a request here.
@@ -236,8 +236,8 @@ impl Agent {
         Ok(response.mytoken().clone())
     }
 
-    /// The same as [`Agent::get_mytoken`], but if response is success, the
-    /// [`responses::MyTokenResponse`] is returned, so you can get additional fields.
+    /// The same as [`Agent::get_mytoken`], but if the response is successful, the
+    /// [`responses::MyTokenResponse`] is returned, allowing you to access additional fields.
     /// # Examples
     /// ```
     /// let mt = agent.get_mytoken_full("shortname")?;
@@ -252,7 +252,7 @@ impl Agent {
         Ok(response)
     }
 
-    /// Tries to get a list of loaded user accounts. Every account that was loaded via
+    /// Attempts to get a list of loaded user accounts. Every account that was loaded via
     /// e.g `oidc-add <account_shortname>` will be returned.
     /// # Errors
     /// The same as [`Agent::send_request`].
@@ -267,7 +267,7 @@ impl Agent {
         Ok(response.info().clone())
     }
 
-    /// Consumes the [`Request`] and sends it to the oidc-agent stream socket and tries retrives the [`Response`].
+    /// Consumes the [`Request`], sends it to the oidc-agent stream socket and attempts to retrives the [`Response`].
     /// # Errors
     /// The method returns an coresponding [`Error`] if:
     /// - connection with socket is not possible anymore,

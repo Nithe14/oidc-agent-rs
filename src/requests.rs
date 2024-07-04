@@ -128,7 +128,7 @@ impl AccessTokenRequestBuilder {
         self.0.account = Some(account.to_string());
         self
     }
-    ///Tries to set the `issuer` for the target request.
+    ///Attempts to set the `issuer` for the target request.
     ///# Errors
     ///the method returns an coresponding [`crate::Error`] if:
     ///- parsing the issuer as an url fails.
@@ -162,7 +162,7 @@ impl AccessTokenRequestBuilder {
         self.0.audience = Some(audience.to_string());
         self
     }
-    ///Tries to build the target request from the builder.
+    ///Attempts to build the target request from the builder.
     ///# Errors
     ///The method returns an coresponding [`crate::Error`] if:
     ///- neither `account` nor `issuer` is set.
@@ -195,7 +195,7 @@ impl MyTokenRequestBuilder {
         self.0.application_hint = Some(application_hint.to_string());
         self
     }
-    ///Tries to build the target request from the builder.
+    ///Attempts to build the target request from the builder.
     ///# Errors
     ///The method returns an coresponding [`crate::Error`] if:
     ///- `account` consists only of withespaces.
