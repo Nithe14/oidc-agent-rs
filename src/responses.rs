@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 use derive_getters::Getters;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use std::error::Error;
 use std::fmt::Display;
 use url::Url;
 
