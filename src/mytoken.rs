@@ -134,7 +134,7 @@ impl<'de> Deserialize<'de> for Capability {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 #[allow(non_camel_case_types)]
 pub enum MyTokenType {
@@ -146,11 +146,11 @@ pub enum MyTokenType {
 #[derive(Serialize, Deserialize, Debug, Hash, Eq, PartialEq, Clone)]
 #[allow(non_snake_case)]
 pub struct Restriction {
-    #[serde(with = "chrono::serde::ts_seconds_option")]
+    #[serde(default, with = "chrono::serde::ts_seconds_option")]
     #[serde(skip_serializing_if = "Option::is_none")]
     nbf: Option<DateTime<Utc>>,
 
-    #[serde(with = "chrono::serde::ts_seconds_option")]
+    #[serde(default, with = "chrono::serde::ts_seconds_option")]
     #[serde(skip_serializing_if = "Option::is_none")]
     exp: Option<DateTime<Utc>>,
 

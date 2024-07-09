@@ -23,7 +23,7 @@ impl Display for Status {
     }
 }
 
-#[derive(Serialize, Deserialize, Getters)]
+#[derive(Serialize, Deserialize, Getters, Debug)]
 pub struct OIDCAgentResponse {
     status: Status,
 }
@@ -39,15 +39,14 @@ pub struct AccessTokenResponse {
 
 impl Response for AccessTokenResponse {}
 
-#[derive(Serialize, Deserialize, Getters)]
+#[derive(Serialize, Deserialize, Getters, Debug)]
 pub struct MyTokenResponse {
     mytoken: Token,
     mytoken_issuer: Url,
     oidc_issuer: Url,
 
-    #[serde(with = "chrono::serde::ts_seconds")]
-    expires_at: DateTime<Utc>,
-
+    #[serde(default, with = "chrono::serde::ts_seconds_option")]
+    expires_at: Option<DateTime<Utc>>,
     mytoken_type: Option<MyTokenType>,
     transfer_code: Option<String>,
     expires_in: Option<u64>, //Number of seconds according to the Mytoken documentation
