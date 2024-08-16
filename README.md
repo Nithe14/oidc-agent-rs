@@ -23,6 +23,30 @@
  The `secret()` method is required to obtain token as a `&str` value. Otherwise the `Token` pseudostruct
  would be returned.
 
+ ## Asynchronous Usage
+ For asynchronous programming, you need to enable the `async` feature and use the `crate::async_impl::Agent`.
+ Here’s a basic example of obtaining an access_token asynchronously:
+ ```rust
+ use oidc_agent_rs::async_impl::Agent;
+ use oidc_agent_rs::Error;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let agent = Agent::new().await?;
+
+    let at = agent.get_access_token("profile_shortname").await?;
+    println!("{}", at.secret());
+
+    Ok(())
+}
+```
+ Cargo.toml
+```toml
+ [dependencies]
+ oidc_agent_rs = { version = "0.2.0", features=["async"]}
+ tokio = { version = "1.39.2", features = ["net", "io-util", "macros", "rt-multi-thread"] }
+ ```
+
  ## Advanced requests
  To obtain access_token with more advanced options you have to use request builder.
  `AccessTokenRequest` has a method to easy build a new request. Then you have to send the request
