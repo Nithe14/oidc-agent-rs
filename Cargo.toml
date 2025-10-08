@@ -1,6 +1,6 @@
 [package]
 name = "oidc_agent_rs"
-version = "0.2.11"
+version = "0.2.12"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Unix only oidc-agent library for Rust."
@@ -12,11 +12,11 @@ authors = [ "Wiktor Nastał <imnithe@gmail.com>" ]
 all-features = true
 
 [dependencies]
-chrono = { version = "0.4.41", features = ["serde"] }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.142"
+chrono = { version = "0.4.42", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
 tokio = { version = "1.47.1", optional = true, features = ["net", "io-util"] }
-url = { version = "2.5.4", features = ["serde"] }
+url = { version = "2.5.7", features = ["serde"] }
 
 [features]
 default = []
